@@ -68,6 +68,26 @@
 			<a id="music_btn" class="play" href="javascript:playPause();"></a>
 		</div>
 	</div>
+	<!-- Password Modal -->
+<div id="pwdModal" class="pwd-modal" aria-hidden="true">
+  <div class="pwd-card">
+    <div class="pwd-title">请输入4位数字密码</div>
+
+    <div class="pwd-inputs" id="pwdInputs">
+      <input class="pwd-box" inputmode="numeric" maxlength="1" />
+      <input class="pwd-box" inputmode="numeric" maxlength="1" />
+      <input class="pwd-box" inputmode="numeric" maxlength="1" />
+      <input class="pwd-box" inputmode="numeric" maxlength="1" />
+    </div>
+
+    <div class="pwd-actions">
+      <button type="button" id="pwdCancel" class="pwd-btn ghost">取消</button>
+      <button type="button" id="pwdOk" class="pwd-btn">确认</button>
+    </div>
+
+    <div class="pwd-hint" id="pwdHint"></div>
+  </div>
+</div>
 </body>
 <script src="js/letter.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/main.js" type="text/javascript" charset="utf-8"></script>
