@@ -40,9 +40,94 @@ function loadingPage() {
 	heart_div.css('top', (page_height - heart_height) / 2);
 	heart_div.css('left', (page_width - heart_width) / 2);
 }
+// ===== Password Gate Config =====
+var CORRECT_PWD = "0226";
+var pwdVerified = false;
 
-$("#open").click(function () {
+// 弹窗相关
+function openPwdModal() {
+	$("#pwdHint").text("");
+	$("#pwdInputs .pwd-box").val("");
+	$("#pwdModal").addClass("show").attr("aria-hidden", "false");
+	setTimeout(function () {
+		$("#pwdInputs .pwd-box").eq(0).focus();
+	}, 50);
+}
 
+function closePwdModal() {
+	$("#pwdModal").removeClass("show").attr("aria-hidden", "true");
+}
+
+function getPwdCode() {
+	var code = "";
+	$("#pwdInputs .pwd-box").each(function () {
+		code += ($(this).val() || "");
+	});
+	return code;
+}
+
+function verifyPwdThenOpen() {
+	var code = getPwdCode();
+	if (code.length < 4) {
+		$("#pwdHint").text("请输入4位数字");
+		return;
+	}
+	if (code === CORRECT_PWD) {
+		pwdVerified = true;
+		closePwdModal();
+		// 触发打开（这次会放行）
+		$("#open").trigger("click");
+	} else {
+		$("#pwdHint").text("密码错误");
+		$("#pwdInputs .pwd-box").val("");
+		$("#pwdInputs .pwd-box").eq(0).focus();
+	}
+}
+
+// 输入框体验：只允许数字、自动跳格、满4位自动验证
+$(function () {
+	$("#pwdInputs .pwd-box").on("input", function () {
+		this.value = this.value.replace(/\D/g, "");
+		var $boxes = $("#pwdInputs .pwd-box");
+		var idx = $boxes.index(this);
+		if (this.value && idx < $boxes.length - 1) {
+			$boxes.eq(idx + 1).focus();
+		}
+		if (getPwdCode().length === 4) verifyPwdThenOpen();
+	});
+
+	$("#pwdInputs .pwd-box").on("keydown", function (e) {
+		var $boxes = $("#pwdInputs .pwd-box");
+		var idx = $boxes.index(this);
+		if (e.key === "Backspace" && !this.value && idx > 0) {
+			$boxes.eq(idx - 1).focus();
+		}
+		if (e.key === "Enter") verifyPwdThenOpen();
+	});
+
+	$("#pwdOk").on("click", verifyPwdThenOpen);
+	$("#pwdCancel").on("click", closePwdModal);
+
+	// 点击遮罩关闭
+	$("#pwdModal").on("click", function (e) {
+		if (e.target === this) closePwdModal();
+	});
+});
+
+// ===== Your Original Open Logic (wrapped with password) =====
+$("#open").click(function (e) {
+
+	// 先做密码门禁：没验证就拦截，不让执行原本打开逻辑
+	if (!pwdVerified) {
+		e.preventDefault();
+		openPwdModal();
+		return false;
+	}
+
+	// 放行一次后立刻重置（下次还要输入）
+	pwdVerified = false;
+
+	// ====== 以下保持你原来的逻辑不变 ======
 	if (!envelope_opened) {
 
 		$('#wax-half').css('display', "block");
@@ -68,5 +153,4 @@ $("#open").click(function () {
 			$('#music_btn').css("display", "block");
 		}
 	}
-
 });
