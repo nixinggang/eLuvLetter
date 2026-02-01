@@ -124,9 +124,6 @@ $("#open").click(function (e) {
 		return false;
 	}
 
-	// 放行一次后立刻重置（下次还要输入）
-	pwdVerified = false;
-
 	// ====== 以下保持你原来的逻辑不变 ======
 	if (!envelope_opened) {
 
